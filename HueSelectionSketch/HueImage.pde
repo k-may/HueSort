@@ -2,12 +2,12 @@ class HueImage implements Comparable {
 
   float value;
   PImage image;
-  PImage srcImage;
+  String fileName;
 
-  HueImage(float aValue, PImage aImage, PImage aSrcImage) {
+  HueImage(float aValue, PImage aImage, String aSrcImage) {
     value = aValue; 
     image = aImage;
-    srcImage = aSrcImage;
+    fileName = aSrcImage;
   }
 
   int compareTo(Object o) {
