@@ -2,9 +2,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+import java.nio.file.Files;
 
 int imgWidth;
-
+ArrayList<String> fileNames;
+String dir;
+String outDir;
 ArrayList<HueImage> rocks = new ArrayList<HueImage>();
 
 void setup() {
@@ -12,19 +17,25 @@ void setup() {
   size(900, 500);
 
   //put image folder name here... (relative to sketch folder!)
-  String dir = "Grey_jpeg";
+  dir = "images";
 
-  //put output folder name here...
-  String outDir = dir + "_hues";
+  outDir = dir + "_hues";
 
-  ArrayList<String> fileNames = getFileNames(dir);
+  fileNames = getFileNames(dir);
+
   imgWidth = (int)(width/ (float)fileNames.size());
+
+  calculateHues();
+  copyAndRename();
+}
+
+void calculateHues() {
 
   PGraphics buffer = createGraphics(imgWidth, height);
 
   for (int i = 0; i <  fileNames.size(); i ++) {
-    String fileName = dir + "/" + fileNames.get(i);
-    PImage rock = loadImage(fileName);
+    String fileName =  fileNames.get(i);
+    PImage rock = loadImage(dir + "/" + fileName);
 
     buffer.beginDraw();
 
@@ -46,22 +57,49 @@ void setup() {
     buffer.endDraw();
   }
 
+  //sort images by hue average
   Collections.sort(rocks);
+}
+
+void copyAndRename() {
+  
+  String dirPath = sketchPath("");
 
   for (int r = 0; r < rocks.size(); r ++) {
     HueImage rock = rocks.get(r);
-    String src = rock.fileName;
-    String fileName = outDir + "/" + rock.value + "_" + src;//"img_" + floor(rock.value) + ".jpeg"; 
 
-    // rock.srcImage.save(outDir + "/" + fileName);
-    /*  Files.copy(src,
-     (new File(fileName).toPath(),
-     StandardCopyOption.REPLACE_EXISTING);*/
-    println(fileName);
+    String srcFileName = rock.fileName;
+    int index = srcFileName.lastIndexOf(".");
+
+    String format = srcFileName.substring(index);
+    String destFileName = dirPath + outDir +  "/" + srcFileName.substring(0, index) + "_" + floor(rock.value) + format;
+
+    srcFileName = dirPath + dir + "/" + srcFileName;
+    
+    copyFile(srcFileName, destFileName);
 
     image(rocks.get(r).image, r * imgWidth, 0);
   }
-  println("done!");
+}
+
+void copyFile(String srcPath, String destPath){
+  
+   try {
+      Path fromPath = new File(srcPath).toPath();
+      Path toPath = new File(destPath).toPath();
+      
+      final Path tmp = toPath.getParent();
+
+      if (tmp != null) // null will be returned if the path has no parent
+        Files.createDirectories(tmp);
+
+      Files.copy(fromPath, toPath, StandardCopyOption.REPLACE_EXISTING);
+
+      println("copy : ", fromPath.toString(), toPath.toString());
+    } 
+    catch (IOException e) {
+      System.err.println(e);
+    }
 }
 
 ArrayList<String> getFileNames(String dir) {
