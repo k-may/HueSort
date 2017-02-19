@@ -1,2 +1,2 @@
-# hueselection
-Sorts images based on hue
+# Hue Sort
+Processing application for sorting collections of images by hue.
