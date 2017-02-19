@@ -72,7 +72,7 @@ void copyAndRename() {
     int index = srcFileName.lastIndexOf(".");
 
     String format = srcFileName.substring(index);
-    String destFileName = dirPath + outDir +  "/" + srcFileName.substring(0, index) + "_" + floor(rock.value) + format;
+    String destFileName = dirPath + outDir +  "/hue_" + floor(rock.value) + format;
 
     srcFileName = dirPath + dir + "/" + srcFileName;
     
